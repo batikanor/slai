@@ -1,0 +1,357 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+.app {
+  width: 100%;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+  color: white;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  padding: 2rem;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.app-header h1 {
+  margin: 0 0 1rem 0;
+  font-size: 2.5rem;
+  font-weight: 300;
+  letter-spacing: 2px;
+}
+
+.status-indicator {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.status-badge {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.status-badge.mocking {
+  background: #ff6b6b;
+  color: white;
+}
+
+.status-badge.live {
+  background: #4ecdc4;
+  color: white;
+}
+
+.mode-toggle {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.mode-toggle.mock {
+  background: #ff6b6b;
+  color: white;
+}
+
+.mode-toggle.live {
+  background: #4ecdc4;
+  color: white;
+}
+
+.mode-toggle:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.ws-status {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.ws-status.ws-disconnected {
+  background: #95a5a6;
+  color: white;
+}
+
+.ws-status.ws-connecting {
+  background: #f39c12;
+  color: white;
+  animation: pulse 1s infinite;
+}
+
+.ws-status.ws-connected {
+  background: #27ae60;
+  color: white;
+}
+
+.ws-status.ws-error {
+  background: #e74c3c;
+  color: white;
+}
+
+.connection-info {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 1rem 2rem;
+  margin: 1rem 0;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  text-align: center;
+}
+
+.connection-info p {
+  margin: 0.5rem 0;
+  font-family: "Courier New", monospace;
+  font-size: 0.9rem;
+  color: #ffffff;
+}
+
+.streaming-badge {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  background: #ffd93d;
+  color: #1e3c72;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.app-main {
+  flex: 1;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+}
+
+.controls {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.control-button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.control-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.control-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.control-button.start {
+  background: #4ecdc4;
+  color: white;
+}
+
+.control-button.stop {
+  background: #ff6b6b;
+  color: white;
+}
+
+.control-button.reset {
+  background: #f9ca24;
+  color: #1e3c72;
+}
+
+.time-window-control {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 1.5rem 2rem;
+  margin: 1rem 0;
+  min-width: 400px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.time-window-control label {
+  display: block;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  font-weight: 300;
+  text-align: center;
+  color: #ffd93d;
+}
+
+.time-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.2);
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.time-slider:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.time-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #ffd93d;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.time-slider::-webkit-slider-thumb:hover {
+  background: #ffeb3b;
+  transform: scale(1.2);
+  box-shadow: 0 0 10px rgba(255, 235, 59, 0.5);
+}
+
+.time-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #ffd93d;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.time-slider::-moz-range-thumb:hover {
+  background: #ffeb3b;
+  transform: scale(1.2);
+  box-shadow: 0 0 10px rgba(255, 235, 59, 0.5);
+}
+
+.time-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.trajectory-plot-container {
+  background: white;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.data-info {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+  min-width: 300px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.data-info h3 {
+  margin: 0 0 1.5rem 0;
+  font-weight: 300;
+  font-size: 1.25rem;
+}
+
+.latest-point {
+  text-align: left;
+}
+
+.latest-point h4 {
+  margin: 0 0 0.5rem 0;
+  font-weight: 400;
+  color: #ffd93d;
+}
+
+.latest-point p {
+  margin: 0.25rem 0;
+  font-family: "Courier New", monospace;
+  font-size: 1rem;
+  color: #ffffff;
+}
