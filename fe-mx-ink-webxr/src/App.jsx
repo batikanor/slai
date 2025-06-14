@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import "./App.css";
+import AudioEqualizer from "./AudioEqualizer";
 import { MOCKING as DEFAULT_MOCKING, PEN_BACKEND_PORT } from "./config";
 import {
   generateMockTrajectoryData,
@@ -178,7 +179,7 @@ function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <h1>3D Trajectory Visualization</h1>
+        <h1>SLAI: Simple Adjustments with AI</h1>
         <div className="status-indicator">
           <button
             className={`mode-toggle ${isMockMode ? "mock" : "live"}`}
@@ -194,75 +195,91 @@ function App() {
       </header>
 
       <main className="app-main">
-        <div className="controls">
-          <button
-            onClick={handleStartStreaming}
-            disabled={isStreaming}
-            className="control-button start"
-          >
-            Start Streaming
-          </button>
-          <button
-            onClick={handleStopStreaming}
-            disabled={!isStreaming}
-            className="control-button stop"
-          >
-            Stop Streaming
-          </button>
-          <button onClick={handleReset} className="control-button reset">
-            Reset Data
-          </button>
-        </div>
-
-        {!isMockMode && (
-          <div className="connection-info">
-            <p>WebSocket endpoint: ws://localhost:{PEN_BACKEND_PORT}</p>
-            <p>Expected data format: {"{ x: number, y: number, z: number }"}</p>
+        {/* Utility / Control bar */}
+        <section className="control-bar">
+          <div className="controls">
+            <button
+              onClick={handleStartStreaming}
+              disabled={isStreaming}
+              className="control-button start"
+            >
+              Start Streaming
+            </button>
+            <button
+              onClick={handleStopStreaming}
+              disabled={!isStreaming}
+              className="control-button stop"
+            >
+              Stop Streaming
+            </button>
+            <button onClick={handleReset} className="control-button reset">
+              Reset Data
+            </button>
           </div>
-        )}
 
-        <div className="time-window-control">
-          <label htmlFor="time-window-slider">
-            Time Window: {showAllData ? "All Data" : `${timeWindow} seconds`}
-          </label>
-          <input
-            id="time-window-slider"
-            type="range"
-            min="1"
-            max="301"
-            value={showAllData ? 301 : timeWindow}
-            onChange={handleTimeWindowChange}
-            className="time-slider"
-          />
-          <div className="time-labels">
-            <span>1s</span>
-            <span>30s</span>
-            <span>1m</span>
-            <span>2m</span>
-            <span>5m</span>
-            <span>All</span>
-          </div>
-        </div>
-
-        {filteredData.length > 0 && (
-          <>
-            <TrajectoryPlot data={filteredData} />
-            <div className="data-info">
-              <h3>
-                Visible Data Points: {filteredData.length} /{" "}
-                {trajectoryData.length}
-              </h3>
-              {filteredData.length > 0 && (
-                <div className="latest-point">
-                  <h4>Latest Point:</h4>
-                  <p>X: {filteredData[filteredData.length - 1].x.toFixed(4)}</p>
-                  <p>Y: {filteredData[filteredData.length - 1].y.toFixed(4)}</p>
-                  <p>Z: {filteredData[filteredData.length - 1].z.toFixed(4)}</p>
-                </div>
-              )}
+          <div className="time-window-control">
+            <label htmlFor="time-window-slider">
+              Time Window: {showAllData ? "All Data" : `${timeWindow} seconds`}
+            </label>
+            <input
+              id="time-window-slider"
+              type="range"
+              min="1"
+              max="301"
+              value={showAllData ? 301 : timeWindow}
+              onChange={handleTimeWindowChange}
+              className="time-slider"
+            />
+            <div className="time-labels">
+              <span>1s</span>
+              <span>30s</span>
+              <span>1m</span>
+              <span>2m</span>
+              <span>5m</span>
+              <span>All</span>
             </div>
-          </>
-        )}
+          </div>
+
+          {!isMockMode && (
+            <div className="connection-info">
+              <p>WebSocket endpoint: ws://localhost:{PEN_BACKEND_PORT}</p>
+              <p>
+                Expected data format: {"{ x: number, y: number, z: number }"}
+              </p>
+            </div>
+          )}
+        </section>
+
+        {/* Main dashboard grid */}
+        <section className="dashboard">
+          <div className="plot-section">
+            {filteredData.length > 0 ? (
+              <>
+                <TrajectoryPlot data={filteredData} />
+                {/* Overlay for latest point & counts */}
+                <div className="latest-overlay">
+                  <span className="overlay-line">
+                    {filteredData.length}/{trajectoryData.length} pts
+                    <> </>
+                  </span>
+                  <span className="overlay-line">
+                    X: {filteredData[filteredData.length - 1].x.toFixed(3)} | Y:{" "}
+                    {filteredData[filteredData.length - 1].y.toFixed(3)} | Z:{" "}
+                    {filteredData[filteredData.length - 1].z.toFixed(3)}
+                  </span>
+                </div>
+              </>
+            ) : (
+              <div className="data-info" style={{ textAlign: "center" }}>
+                <h3>No trajectory data to display</h3>
+              </div>
+            )}
+          </div>
+
+          <div className="side-panel">
+            <AudioEqualizer trajectoryData={trajectoryData} />
+          </div>
+        </section>
       </main>
     </div>
   );

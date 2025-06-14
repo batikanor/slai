@@ -31,8 +31,13 @@ const TrajectoryPlot = ({ data }) => {
         colorscale: "Viridis",
         showscale: true,
         colorbar: {
-          title: "Time",
-          titleside: "right",
+          title: {
+            text: "Time",
+            font: { color: "#ffffff" },
+            side: "right",
+          },
+          tickfont: { color: "#ffffff" },
+          outlinecolor: "rgba(255,255,255,0.3)",
         },
       },
       name: "Trajectory",
@@ -40,36 +45,50 @@ const TrajectoryPlot = ({ data }) => {
   ];
 
   const layout = {
-    title: {
-      text: "3D Trajectory Visualization",
-      font: {
-        size: 24,
-      },
-    },
+    // Remove internal title to reclaim vertical space
+    margin: { l: 0, r: 0, b: 0, t: 10, pad: 0 },
     autosize: true,
-    width: 800,
-    height: 600,
+    // width and height will adapt to the container for responsiveness
     scene: {
+      dragmode: "orbit",
       xaxis: {
-        title: "X Position",
-        gridcolor: "rgb(255, 255, 255)",
-        zerolinecolor: "rgb(255, 255, 255)",
+        title: {
+          text: "X Position",
+          font: { color: "#ffffff" },
+        },
+        gridcolor: "rgba(200, 200, 200, 0.35)",
+        gridwidth: 1,
+        zerolinecolor: "rgba(200, 200, 200, 0.6)",
+        tickfont: { color: "#ffffff" },
         showbackground: true,
-        backgroundcolor: "rgb(230, 230, 230)",
+        backgroundcolor: "rgba(0, 0, 0, 0.05)",
+        showgrid: true,
       },
       yaxis: {
-        title: "Y Position",
-        gridcolor: "rgb(255, 255, 255)",
-        zerolinecolor: "rgb(255, 255, 255)",
+        title: {
+          text: "Y Position",
+          font: { color: "#ffffff" },
+        },
+        gridcolor: "rgba(200, 200, 200, 0.35)",
+        gridwidth: 1,
+        zerolinecolor: "rgba(200, 200, 200, 0.6)",
+        tickfont: { color: "#ffffff" },
         showbackground: true,
-        backgroundcolor: "rgb(230, 230, 230)",
+        backgroundcolor: "rgba(0, 0, 0, 0.05)",
+        showgrid: true,
       },
       zaxis: {
-        title: "Z Position",
-        gridcolor: "rgb(255, 255, 255)",
-        zerolinecolor: "rgb(255, 255, 255)",
+        title: {
+          text: "Z Position",
+          font: { color: "#ffffff" },
+        },
+        gridcolor: "rgba(200, 200, 200, 0.35)",
+        gridwidth: 1,
+        zerolinecolor: "rgba(200, 200, 200, 0.6)",
+        tickfont: { color: "#ffffff" },
         showbackground: true,
-        backgroundcolor: "rgb(230, 230, 230)",
+        backgroundcolor: "rgba(0, 0, 0, 0.05)",
+        showgrid: true,
       },
       camera: {
         eye: {
@@ -86,7 +105,7 @@ const TrajectoryPlot = ({ data }) => {
   const config = {
     displayModeBar: true,
     displaylogo: false,
-    modeBarButtonsToRemove: ["pan3d"],
+    modeBarButtonsToRemove: [],
   };
 
   return (

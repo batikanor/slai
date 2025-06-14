@@ -1,7 +1,7 @@
 #root {
-  max-width: 1280px;
+  max-width: 100%;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 0.25rem;
   text-align: center;
 }
 
@@ -44,14 +44,14 @@
 .app {
   width: 100%;
   min-height: 100vh;
-  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-  color: white;
+  background: var(--color-bg-gradient);
+  color: var(--color-text);
   display: flex;
   flex-direction: column;
 }
 
 .app-header {
-  padding: 2rem;
+  padding: 1rem 0.5rem;
   text-align: center;
   background: rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(10px);
@@ -59,10 +59,44 @@
 }
 
 .app-header h1 {
-  margin: 0 0 1rem 0;
-  font-size: 2.5rem;
-  font-weight: 300;
-  letter-spacing: 2px;
+  margin: 0 0 0.5rem 0;
+  font-size: 2.3rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  background: linear-gradient(270deg, #ffd93d, #ffffff, #ffd93d);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradientMove 4s linear infinite, tilt3D 10s ease-in-out infinite;
+  filter: drop-shadow(0 0 8px rgba(255, 217, 61, 0.6));
+}
+
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+@keyframes tilt3D {
+  0% {
+    transform: perspective(600px) rotateX(0deg) rotateY(0deg);
+  }
+  25% {
+    transform: perspective(600px) rotateX(8deg) rotateY(-6deg);
+  }
+  50% {
+    transform: perspective(600px) rotateX(0deg) rotateY(0deg);
+  }
+  75% {
+    transform: perspective(600px) rotateX(-8deg) rotateY(6deg);
+  }
+  100% {
+    transform: perspective(600px) rotateX(0deg) rotateY(0deg);
+  }
 }
 
 .status-indicator {
@@ -82,35 +116,35 @@
 }
 
 .status-badge.mocking {
-  background: #ff6b6b;
-  color: white;
+  background: var(--color-danger);
+  color: var(--color-text);
 }
 
 .status-badge.live {
-  background: #4ecdc4;
-  color: white;
+  background: var(--color-primary);
+  color: var(--color-text);
 }
 
 .mode-toggle {
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  font-size: 0.875rem;
+  padding: 0.35rem 0.9rem;
+  border-radius: 18px;
+  font-size: 0.8rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.8px;
   cursor: pointer;
   border: 2px solid transparent;
-  transition: all 0.3s ease;
+  transition: all 0.25s ease;
 }
 
 .mode-toggle.mock {
-  background: #ff6b6b;
-  color: white;
+  background: var(--color-danger);
+  color: var(--color-text);
 }
 
 .mode-toggle.live {
-  background: #4ecdc4;
-  color: white;
+  background: var(--color-primary);
+  color: var(--color-text);
 }
 
 .mode-toggle:hover {
@@ -168,7 +202,7 @@
 .streaming-badge {
   padding: 0.5rem 1rem;
   border-radius: 20px;
-  background: #ffd93d;
+  background: var(--color-accent);
   color: #1e3c72;
   font-size: 0.875rem;
   font-weight: 600;
@@ -190,30 +224,30 @@
 }
 
 .app-main {
-  flex: 1;
-  padding: 2rem;
+  height: calc(100vh - 140px);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 2rem;
+  gap: 1rem;
+  padding: 1rem;
+  overflow: hidden;
 }
 
 .controls {
   display: flex;
-  gap: 1rem;
-  margin-bottom: 1rem;
+  gap: 0.75rem;
+  margin-bottom: 0;
 }
 
 .control-button {
-  padding: 0.75rem 1.5rem;
+  padding: 0.35rem 1rem;
   border: none;
-  border-radius: 8px;
-  font-size: 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.25s ease;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.8px;
 }
 
 .control-button:hover:not(:disabled) {
@@ -227,17 +261,17 @@
 }
 
 .control-button.start {
-  background: #4ecdc4;
-  color: white;
+  background: var(--color-primary);
+  color: var(--color-text);
 }
 
 .control-button.stop {
-  background: #ff6b6b;
-  color: white;
+  background: var(--color-danger);
+  color: var(--color-text);
 }
 
 .control-button.reset {
-  background: #f9ca24;
+  background: var(--color-accent);
   color: #1e3c72;
 }
 
@@ -245,19 +279,22 @@
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
   border-radius: 12px;
-  padding: 1.5rem 2rem;
-  margin: 1rem 0;
-  min-width: 400px;
+  padding: 0.35rem 0.75rem;
+  margin: 0;
+  min-width: 240px;
   border: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .time-window-control label {
-  display: block;
-  margin-bottom: 1rem;
-  font-size: 1.1rem;
-  font-weight: 300;
-  text-align: center;
+  display: inline-block;
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 400;
   color: #ffd93d;
+  white-space: nowrap;
 }
 
 .time-slider {
@@ -309,49 +346,116 @@
 }
 
 .time-labels {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 0.5rem;
-  font-size: 0.875rem;
-  color: rgba(255, 255, 255, 0.7);
+  display: none;
 }
 
 .trajectory-plot-container {
-  background: white;
-  border-radius: 12px;
-  padding: 1rem;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  background: transparent;
+  border-radius: 8px;
+  padding: 0;
+  box-shadow: none;
+  height: 100%;
+  position: relative;
 }
 
 .data-info {
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
-  border-radius: 12px;
-  padding: 2rem;
+  border-radius: 10px;
+  padding: 0.5rem;
   text-align: center;
-  min-width: 300px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  min-width: 280px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .data-info h3 {
-  margin: 0 0 1.5rem 0;
-  font-weight: 300;
-  font-size: 1.25rem;
+  margin: 0 0 0.25rem 0;
+  font-weight: 500;
+  font-size: 0.85rem;
+  line-height: 1.1;
 }
 
 .latest-point {
   text-align: left;
+  display: grid;
+  row-gap: 0.1rem;
 }
 
 .latest-point h4 {
-  margin: 0 0 0.5rem 0;
-  font-weight: 400;
+  margin: 0;
+  font-weight: 500;
   color: #ffd93d;
+  font-size: 0.8rem;
+  line-height: 1.1;
 }
 
 .latest-point p {
-  margin: 0.25rem 0;
+  margin: 0;
   font-family: "Courier New", monospace;
-  font-size: 1rem;
+  font-size: 0.75rem;
   color: #ffffff;
+  line-height: 1.15;
+}
+
+/* --- Modern Dashboard Layout Enhancements --- */
+
+.control-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  backdrop-filter: blur(14px);
+}
+
+.dashboard {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 7fr 8fr;
+  gap: 0.5rem;
+  overflow: hidden;
+}
+
+.plot-section {
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.side-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+@media (max-width: 1024px) {
+  .dashboard {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+  }
+}
+
+/* Overlay inside plot for latest data point */
+.latest-overlay {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background: rgba(0, 0, 0, 0.4);
+  color: #ffffff;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  line-height: 1.2;
+  pointer-events: none;
+  backdrop-filter: blur(4px);
+}
+
+.overlay-line + .overlay-line {
+  margin-top: 2px;
 }

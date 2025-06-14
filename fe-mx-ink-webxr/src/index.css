@@ -1,5 +1,18 @@
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  /* Typography */
+  font-family: "Inter", system-ui, Avenir, Helvetica, Arial, sans-serif;
+
+  /* Theme Colors */
+  --color-primary: #4ecdc4;
+  --color-accent: #ffd93d;
+  --color-danger: #ff6b6b;
+  --color-bg-gradient: linear-gradient(
+    135deg,
+    #0f2027 0%,
+    #203a43 50%,
+    #2c5364 100%
+  );
+  --color-text: #ffffff;
   line-height: 1.5;
   font-weight: 400;
 
