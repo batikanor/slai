@@ -369,11 +369,79 @@ const AudioEqualizer = ({ trajectoryData }) => {
     }
   };
 
+  /* --------------------------------------------------
+   * Matching Presets — quickly map frequency bands to
+   * pen-trajectory axes (x, y, z) with sensible multipliers.
+   * -------------------------------------------------- */
+  const applyMatchingPreset = (preset) => {
+    // Define how each preset maps the 10 bands (low ➜ high)
+    // Possible axis values: "x", "y", "z", or "none" (disabled)
+    const mappingPresets = {
+      pop: {
+        mapping: [
+          "z", // 32 Hz
+          "z", // 64 Hz
+          "x", // 125 Hz
+          "x", // 250 Hz
+          "x", // 500 Hz
+          "y", // 1 kHz
+          "y", // 2 kHz
+          "y", // 4 kHz
+          "y", // 8 kHz
+          "y", // 16 kHz
+        ],
+        multiplier: 1.2,
+      },
+      yodel: {
+        mapping: [
+          "y", // focus mids for voice projection
+          "y",
+          "y",
+          "x",
+          "x",
+          "x",
+          "z",
+          "z",
+          "z",
+          "z",
+        ],
+        multiplier: 1.5,
+      },
+      ambient: {
+        mapping: ["x", "x", "x", "x", "y", "y", "y", "y", "z", "z"],
+        multiplier: 0.8,
+      },
+    };
+
+    const selected = mappingPresets[preset];
+    if (!selected) return;
+
+    // If we don't yet have a reference point, grab the latest trajectory
+    if (trajectoryData && trajectoryData.length > 0) {
+      const latestPoint = trajectoryData[trajectoryData.length - 1];
+      setReferencePoint({
+        x: latestPoint.x,
+        y: latestPoint.y,
+        z: latestPoint.z,
+      });
+    }
+
+    // Apply mapping + multipliers to each band
+    const newBands = bands.map((band, idx) => ({
+      ...band,
+      mapping: selected.mapping[idx] || "none",
+      multiplier: selected.multiplier,
+    }));
+
+    setBands(newBands);
+
+    // Ensure mapping mode is enabled so the preset takes effect
+    if (!mappingEnabled) setMappingEnabled(true);
+  };
+
   return (
     <div className="audio-equalizer">
-      <h2>Music Equalizer</h2>
-
-      <div className="upload-section">
+      <div className={`upload-section ${fileName ? "file-loaded" : ""}`}>
         <label htmlFor="audio-upload" className="upload-button">
           <span className="upload-icon">🎵</span>
           <span>Upload Music File</span>
@@ -390,15 +458,6 @@ const AudioEqualizer = ({ trajectoryData }) => {
 
       {fileName && (
         <>
-          <div className="visualizer-section">
-            <canvas
-              ref={canvasRef}
-              width={600}
-              height={150}
-              className="visualizer-canvas"
-            />
-          </div>
-
           <div className="player-controls">
             <button
               className="play-pause-button"
@@ -419,6 +478,15 @@ const AudioEqualizer = ({ trajectoryData }) => {
               max="100"
               value={duration ? (currentTime / duration) * 100 : 0}
               onChange={handleSeek}
+            />
+          </div>
+
+          <div className="visualizer-section">
+            <canvas
+              ref={canvasRef}
+              width={600}
+              height={150}
+              className="visualizer-canvas"
             />
           </div>
 
@@ -507,8 +575,22 @@ const AudioEqualizer = ({ trajectoryData }) => {
             </div>
           </div>
 
+          {/* Axis-matching EQ presets */}
+          <div className="presets-section matching-presets-section">
+            <h3>Matching Presets</h3>
+            <div className="preset-buttons">
+              <button onClick={() => applyMatchingPreset("pop")}>Pop</button>
+              <button onClick={() => applyMatchingPreset("yodel")}>
+                Yodel
+              </button>
+              <button onClick={() => applyMatchingPreset("ambient")}>
+                Ambient
+              </button>
+            </div>
+          </div>
+
           <div className="presets-section">
-            <h3>Presets</h3>
+            <h3>Standard Equalizer Presets</h3>
             <div className="preset-buttons">
               <button onClick={() => applyPreset("flat")}>Flat</button>
               <button onClick={() => applyPreset("bass-boost")}>

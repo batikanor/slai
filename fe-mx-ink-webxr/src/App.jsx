@@ -259,8 +259,8 @@ function App() {
                 {/* Overlay for latest point & counts */}
                 <div className="latest-overlay">
                   <span className="overlay-line">
-                    {filteredData.length}/{trajectoryData.length} pts
-                    <> </>
+                    {/* {filteredData.length}/{trajectoryData.length} Points --- Latest point:{" "} */}
+                    Latest point: <> </>
                   </span>
                   <span className="overlay-line">
                     X: {filteredData[filteredData.length - 1].x.toFixed(3)} | Y:{" "}
