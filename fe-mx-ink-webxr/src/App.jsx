@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import "./App.css";
 import AudioEqualizer from "./AudioEqualizer";
-import { MOCKING as DEFAULT_MOCKING, PEN_BACKEND_PORT } from "./config";
+import { MOCKING as DEFAULT_MOCKING, PEN_BACKEND_URL } from "./config";
 import {
   generateMockTrajectoryData,
   generateStreamingMockData,
@@ -17,6 +17,17 @@ function App() {
   const [showAllData, setShowAllData] = useState(false);
   const [isMockMode, setIsMockMode] = useState(DEFAULT_MOCKING);
   const [wsStatus, setWsStatus] = useState("disconnected"); // 'disconnected', 'connecting', 'connected', 'error'
+  // Modes for presenting / driving visualisations and audio mappings
+  const MODES = [
+    { value: "position", label: "Position" },
+    { value: "velocity", label: "Velocity (direct)" },
+    { value: "velocity10", label: "Velocity (10 ms)" },
+    { value: "velocity100", label: "Velocity (100 ms)" },
+    { value: "acceleration", label: "Acceleration (direct)" },
+    { value: "acceleration10", label: "Acceleration (10 ms)" },
+    { value: "acceleration100", label: "Acceleration (100 ms)" },
+  ];
+  const [selectedMode, setSelectedMode] = useState("position"); // default unchanged behaviour
   const wsRef = useRef(null);
   const dataIndexRef = useRef(0);
 
@@ -35,7 +46,7 @@ function App() {
   useEffect(() => {
     if (!isMockMode && isStreaming) {
       // Connect to WebSocket
-      const wsUrl = `ws://localhost:${PEN_BACKEND_PORT}`;
+      const wsUrl = PEN_BACKEND_URL;
       console.log(`Connecting to WebSocket at ${wsUrl}`);
       setWsStatus("connecting");
 
@@ -177,6 +188,115 @@ function App() {
 
   const filteredData = getFilteredData();
 
+  /* --------------------------------------------------
+   * Metric transformation helpers
+   * -------------------------------------------------- */
+  const computeDerivedData = useCallback(
+    (data) => {
+      if (!data || data.length === 0) return [];
+
+      // Helper to find an earlier index based on a time window
+      const findPrevIdxByWindow = (idx, windowMs) => {
+        if (idx === 0) return 0;
+        if (windowMs === 0) return Math.max(0, idx - 1);
+        const targetTs = data[idx].timestamp - windowMs;
+        for (let j = idx - 1; j >= 0; j--) {
+          if (data[j].timestamp <= targetTs) return j;
+        }
+        // fallback to the oldest available
+        return 0;
+      };
+
+      const derived = data.map((pt, idx) => {
+        const { x, y, z } = pt;
+
+        switch (selectedMode) {
+          case "position":
+            return pt;
+
+          case "velocity":
+            if (idx === 0) return { ...pt, x: 0, y: 0, z: 0 };
+            {
+              const prev = data[idx - 1];
+              const dt = (pt.timestamp - prev.timestamp) / 1000 || 1e-3; // seconds
+              return {
+                ...pt,
+                x: (x - prev.x) / dt,
+                y: (y - prev.y) / dt,
+                z: (z - prev.z) / dt,
+              };
+            }
+
+          case "velocity10":
+          case "velocity100": {
+            const windowMs = selectedMode === "velocity10" ? 10 : 100;
+            const prevIdx = findPrevIdxByWindow(idx, windowMs);
+            if (prevIdx === idx) return { ...pt, x: 0, y: 0, z: 0 };
+            const prev = data[prevIdx];
+            const dt = (pt.timestamp - prev.timestamp) / 1000 || 1e-3;
+            return {
+              ...pt,
+              x: (x - prev.x) / dt,
+              y: (y - prev.y) / dt,
+              z: (z - prev.z) / dt,
+            };
+          }
+
+          case "acceleration":
+          case "acceleration10":
+          case "acceleration100": {
+            // Need velocity first
+            const windowMs =
+              selectedMode === "acceleration10"
+                ? 10
+                : selectedMode === "acceleration100"
+                ? 100
+                : 0; // 0 ➜ direct neighbour
+
+            const prevIdx = findPrevIdxByWindow(idx, windowMs);
+            if (prevIdx === idx) return { ...pt, x: 0, y: 0, z: 0 };
+            const prev = data[prevIdx];
+            const dt1 = (pt.timestamp - prev.timestamp) / 1000 || 1e-3;
+
+            // Velocity at current and previous reference point
+            const vx_now = (x - prev.x) / dt1;
+            const vy_now = (y - prev.y) / dt1;
+            const vz_now = (z - prev.z) / dt1;
+
+            // For acceleration we need velocity of prev segment too
+            if (prevIdx === 0) return { ...pt, x: 0, y: 0, z: 0 };
+            const prevPrevIdx = findPrevIdxByWindow(prevIdx, windowMs);
+            const prevPrev = data[prevPrevIdx];
+            const dt2 = (prev.timestamp - prevPrev.timestamp) / 1000 || 1e-3;
+            const vx_prev = (prev.x - prevPrev.x) / dt2;
+            const vy_prev = (prev.y - prevPrev.y) / dt2;
+            const vz_prev = (prev.z - prevPrev.z) / dt2;
+
+            const dtAcc = (pt.timestamp - prev.timestamp) / 1000 || 1e-3;
+
+            return {
+              ...pt,
+              x: (vx_now - vx_prev) / dtAcc,
+              y: (vy_now - vy_prev) / dtAcc,
+              z: (vz_now - vz_prev) / dtAcc,
+            };
+          }
+
+          default:
+            return pt;
+        }
+      });
+
+      return derived;
+    },
+    [selectedMode]
+  );
+
+  const transformedData = useMemo(
+    () => computeDerivedData(filteredData),
+    [filteredData, computeDerivedData]
+  );
+
   return (
     <div className="app">
       <header className="app-header">
@@ -243,20 +363,46 @@ function App() {
 
           {!isMockMode && (
             <div className="connection-info">
-              <p>WebSocket endpoint: ws://localhost:{PEN_BACKEND_PORT}</p>
+              <p>WebSocket endpoint: {PEN_BACKEND_URL}</p>
               <p>
                 Expected data format: {"{ x: number, y: number, z: number }"}
               </p>
             </div>
           )}
+
+          {/* Metric selection */}
+          <div className="metric-selector">
+            <label
+              htmlFor="metric-mode"
+              style={{ color: "#ffd93d", fontSize: "0.9rem" }}
+            >
+              Data Mode:
+            </label>
+            <select
+              id="metric-mode"
+              value={selectedMode}
+              onChange={(e) => setSelectedMode(e.target.value)}
+              style={{
+                marginLeft: "0.5rem",
+                padding: "0.25rem 0.5rem",
+                borderRadius: "6px",
+              }}
+            >
+              {MODES.map((m) => (
+                <option key={m.value} value={m.value}>
+                  {m.label}
+                </option>
+              ))}
+            </select>
+          </div>
         </section>
 
         {/* Main dashboard grid */}
         <section className="dashboard">
           <div className="plot-section">
-            {filteredData.length > 0 ? (
+            {transformedData.length > 0 ? (
               <>
-                <TrajectoryPlot data={filteredData} />
+                <TrajectoryPlot data={transformedData} />
                 {/* Overlay for latest point & counts */}
                 <div className="latest-overlay">
                   <span className="overlay-line">
@@ -264,9 +410,12 @@ function App() {
                     Latest point: <> </>
                   </span>
                   <span className="overlay-line">
-                    X: {filteredData[filteredData.length - 1].x.toFixed(3)} | Y:{" "}
-                    {filteredData[filteredData.length - 1].y.toFixed(3)} | Z:{" "}
-                    {filteredData[filteredData.length - 1].z.toFixed(3)}
+                    X:{" "}
+                    {transformedData[transformedData.length - 1].x.toFixed(3)} |
+                    Y:{" "}
+                    {transformedData[transformedData.length - 1].y.toFixed(3)} |
+                    Z:{" "}
+                    {transformedData[transformedData.length - 1].z.toFixed(3)}
                   </span>
                 </div>
               </>
@@ -279,10 +428,10 @@ function App() {
 
           <div className="side-panel">
             {/* Audio controls & visualizer */}
-            <AudioEqualizer trajectoryData={trajectoryData} />
+            <AudioEqualizer trajectoryData={transformedData} />
 
             {/* NEW: dynamic line-chart showcasing how each axis evolves over time */}
-            <XYZTimelinePlot data={filteredData} />
+            <XYZTimelinePlot data={transformedData} />
           </div>
         </section>
       </main>

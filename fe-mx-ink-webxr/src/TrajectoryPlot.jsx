@@ -63,6 +63,9 @@ const TrajectoryPlot = ({ data }) => {
         showbackground: true,
         backgroundcolor: "rgba(0, 0, 0, 0.05)",
         showgrid: true,
+        range: [-1, 1],
+        autorange: false,
+        fixedrange: true,
       },
       yaxis: {
         title: {
@@ -76,6 +79,9 @@ const TrajectoryPlot = ({ data }) => {
         showbackground: true,
         backgroundcolor: "rgba(0, 0, 0, 0.05)",
         showgrid: true,
+        range: [-1, 1],
+        autorange: false,
+        fixedrange: true,
       },
       zaxis: {
         title: {
@@ -89,14 +95,20 @@ const TrajectoryPlot = ({ data }) => {
         showbackground: true,
         backgroundcolor: "rgba(0, 0, 0, 0.05)",
         showgrid: true,
+        range: [-1, 1],
+        autorange: false,
+        fixedrange: true,
       },
       camera: {
+        up: { x: 0, y: 1, z: 0 },
         eye: {
           x: 1.5,
           y: 1.5,
           z: 1.5,
         },
       },
+      aspectmode: "manual",
+      aspectratio: { x: 1, y: 1, z: 1 },
     },
     paper_bgcolor: "rgba(0,0,0,0)",
     plot_bgcolor: "rgba(0,0,0,0)",

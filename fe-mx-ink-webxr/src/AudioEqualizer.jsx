@@ -390,7 +390,7 @@ const AudioEqualizer = ({ trajectoryData }) => {
           "y", // 8 kHz
           "y", // 16 kHz
         ],
-        multiplier: 1.2,
+        multiplier: 30,
       },
       yodel: {
         mapping: [
@@ -405,11 +405,11 @@ const AudioEqualizer = ({ trajectoryData }) => {
           "z",
           "z",
         ],
-        multiplier: 1.5,
+        multiplier: 100,
       },
       ambient: {
         mapping: ["x", "x", "x", "x", "y", "y", "y", "y", "z", "z"],
-        multiplier: 0.8,
+        multiplier: 20,
       },
     };
 
@@ -552,13 +552,18 @@ const AudioEqualizer = ({ trajectoryData }) => {
 
                     {band.mapping !== "none" && (
                       <div className="multiplier-control">
-                        <label>×{band.multiplier.toFixed(1)}</label>
+                        <label>
+                          ×
+                          {band.multiplier >= 10
+                            ? band.multiplier.toFixed(0)
+                            : band.multiplier.toFixed(1)}
+                        </label>
                         <input
                           type="range"
                           className="multiplier-slider"
-                          min="0.1"
-                          max="5.0"
-                          step="0.1"
+                          min="1"
+                          max="1000"
+                          step="1"
                           value={band.multiplier}
                           onChange={(e) =>
                             handleMultiplierChange(
