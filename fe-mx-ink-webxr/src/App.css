@@ -459,3 +459,10 @@
 .overlay-line + .overlay-line {
   margin-top: 2px;
 }
+
+/* --- New XYZ Timeline Plot Styles --- */
+.xyz-timeline-plot {
+  background: transparent;
+  border: none;
+  height: 260px;
+}

@@ -7,6 +7,7 @@ import {
   generateStreamingMockData,
 } from "./mockDataGenerator";
 import TrajectoryPlot from "./TrajectoryPlot";
+import XYZTimelinePlot from "./XYZTimelinePlot";
 
 function App() {
   const [trajectoryData, setTrajectoryData] = useState([]);
@@ -277,7 +278,11 @@ function App() {
           </div>
 
           <div className="side-panel">
+            {/* Audio controls & visualizer */}
             <AudioEqualizer trajectoryData={trajectoryData} />
+
+            {/* NEW: dynamic line-chart showcasing how each axis evolves over time */}
+            <XYZTimelinePlot data={filteredData} />
           </div>
         </section>
       </main>
