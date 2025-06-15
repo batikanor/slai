@@ -3,9 +3,9 @@
 This repository contains multiple projects related to immersive 3D painting and music control experiences, including WebXR and desktop applications.
 
 ## Projects
-- **mx-ink-webxr**: Immersive 3D painting with Logitech MX-INK and WebXR, allowing users to control music settings (pitch, volume, instrument selection) based on stylus coordinates.
-- **fe-mx-ink-webxr**: Frontend for MX Ink WebXR.
-- **desktop-app**: Desktop companion app.
+- **mx-ink-webxr**: Immersive 3D painting with Logitech MX-INK and WebXR, allowing users to control music settings (pitch, volume, instrument selection) based on stylus coordinates. This project uses Three.js and WebXR for a seamless VR experience, integrating real-time music control through WebSocket communication.
+- **fe-mx-ink-webxr**: Frontend for MX Ink WebXR, providing a user interface for interacting with the VR application. It includes features for real-time updates and user interaction.
+- **desktop-app**: Desktop companion app that enhances the MX Ink WebXR experience by providing additional controls and settings. It integrates with the VR application to offer a comprehensive user experience.
 
 ## Getting Started
 Each project contains its own README with setup and usage instructions. Please refer to the respective folders for more details.
