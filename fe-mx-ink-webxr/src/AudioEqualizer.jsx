@@ -15,6 +15,17 @@ const AudioEqualizer = ({ trajectoryData }) => {
   const animationRef = useRef(null);
   const canvasRef = useRef(null);
 
+  const specialGainRef = useRef(null);
+  const specialSourceRef = useRef(null);
+  const specialAudioElementRef = useRef(null);
+  const [specialFileName, setSpecialFileName] = useState("");
+  const [specialControl, setSpecialControl] = useState({
+    value: 0, // slider position between -1 and 1
+    baseGain: 0,
+    mapping: "none",
+    multiplier: 1.0,
+  });
+
   // Equalizer bands - typical frequencies for a 10-band EQ
   const [bands, setBands] = useState([
     {
@@ -140,13 +151,27 @@ const AudioEqualizer = ({ trajectoryData }) => {
         return { ...band, gain: newGain };
       });
     });
+
+    // Update special slider if it has mapping
+    setSpecialControl((prev) => {
+      if (prev.mapping === "none") return prev;
+      const delta = deltas[prev.mapping];
+      const change = delta * prev.multiplier;
+      const newValue = Math.max(-1, Math.min(1, prev.baseGain + change));
+      if (specialGainRef.current) {
+        specialGainRef.current.gain.value = newValue > 0 ? newValue : 0;
+      }
+      return { ...prev, value: newValue };
+    });
   }, [trajectoryData, mappingEnabled, referencePoint]);
 
   const initializeAudio = async (file) => {
     try {
       // Create audio context
       const AudioContext = window.AudioContext || window.webkitAudioContext;
-      audioContextRef.current = new AudioContext();
+      if (!audioContextRef.current) {
+        audioContextRef.current = new AudioContext();
+      }
 
       // Create audio element
       const audio = new Audio();
@@ -319,6 +344,9 @@ const AudioEqualizer = ({ trajectoryData }) => {
       // Store current gains as base gains
       const newBands = bands.map((band) => ({ ...band, baseGain: band.gain }));
       setBands(newBands);
+
+      // Store special base value
+      setSpecialControl((prev) => ({ ...prev, baseGain: prev.value }));
     }
     setMappingEnabled(!mappingEnabled);
   };
@@ -332,6 +360,21 @@ const AudioEqualizer = ({ trajectoryData }) => {
         filter.gain.value = 0;
       }
     });
+
+    // Reset special
+    setSpecialControl({
+      value: 0,
+      baseGain: 0,
+      mapping: "none",
+      multiplier: 1,
+    });
+    if (specialGainRef.current) {
+      specialGainRef.current.gain.value = 0;
+    }
+    if (specialAudioElementRef.current) {
+      specialAudioElementRef.current.pause();
+      specialAudioElementRef.current.currentTime = 0;
+    }
   };
 
   const formatTime = (time) => {
@@ -397,15 +440,15 @@ const AudioEqualizer = ({ trajectoryData }) => {
           "y", // focus mids for voice projection
           "y",
           "y",
-          "x",
-          "x",
-          "x",
+          "z",
+          "z",
+          "y",
           "z",
           "z",
           "z",
           "z",
         ],
-        multiplier: 100,
+        multiplier: 50,
       },
       ambient: {
         mapping: ["x", "x", "x", "x", "y", "y", "y", "y", "z", "z"],
@@ -437,6 +480,82 @@ const AudioEqualizer = ({ trajectoryData }) => {
 
     // Ensure mapping mode is enabled so the preset takes effect
     if (!mappingEnabled) setMappingEnabled(true);
+  };
+
+  const handleSpecialFileUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    try {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (!audioContextRef.current) {
+        audioContextRef.current = new AudioContext();
+      }
+
+      // Create / replace audio element
+      const audio = new Audio();
+      audio.src = URL.createObjectURL(file);
+      audio.loop = true;
+      specialAudioElementRef.current = audio;
+
+      // Ensure element can play to avoid user gesture restrictions later
+      await new Promise((resolve) => {
+        audio.addEventListener("canplay", resolve, { once: true });
+      });
+
+      // Create media element source
+      specialSourceRef.current =
+        audioContextRef.current.createMediaElementSource(audio);
+
+      // Create gain node if it doesn't exist
+      if (!specialGainRef.current) {
+        specialGainRef.current = audioContextRef.current.createGain();
+      }
+      specialGainRef.current.gain.value = 0;
+
+      // Connect graph: source -> gain -> destination
+      specialSourceRef.current.connect(specialGainRef.current);
+      specialGainRef.current.connect(audioContextRef.current.destination);
+
+      setSpecialFileName(file.name);
+    } catch (error) {
+      console.error("Error initializing special audio:", error);
+    }
+  };
+
+  const handleSpecialSliderChange = (value) => {
+    setSpecialControl((prev) => ({ ...prev, value, baseGain: value }));
+    if (specialGainRef.current) {
+      const vol = value > 0 ? value : 0;
+      specialGainRef.current.gain.value = vol;
+    }
+    if (specialAudioElementRef.current) {
+      if (value > 0) {
+        // Resume context if needed
+        if (
+          audioContextRef.current &&
+          audioContextRef.current.state === "suspended"
+        ) {
+          audioContextRef.current.resume();
+        }
+        specialAudioElementRef.current.play().catch(() => {});
+      } else {
+        specialAudioElementRef.current.pause();
+        specialAudioElementRef.current.currentTime = 0;
+      }
+    }
+  };
+
+  const handleSpecialMappingChange = (axis) => {
+    setSpecialControl((prev) => ({
+      ...prev,
+      mapping: axis,
+      baseGain: prev.value,
+    }));
+  };
+
+  const handleSpecialMultiplierChange = (multiplier) => {
+    setSpecialControl((prev) => ({ ...prev, multiplier }));
   };
 
   return (
@@ -577,6 +696,89 @@ const AudioEqualizer = ({ trajectoryData }) => {
                   </div>
                 </div>
               ))}
+
+              {/* Special Slider */}
+              <div className="eq-band special-band">
+                <div className="eq-slider-container">
+                  <span className="gain-value">
+                    {specialControl.value <= 0
+                      ? "Off"
+                      : `×${specialControl.value.toFixed(2)}`}
+                  </span>
+                  <input
+                    type="range"
+                    className="eq-slider special-slider"
+                    min="-1"
+                    max="1"
+                    step="0.01"
+                    value={specialControl.value}
+                    onChange={(e) =>
+                      handleSpecialSliderChange(parseFloat(e.target.value))
+                    }
+                    orient="vertical"
+                  />
+                  <span className="gain-value">&nbsp;</span>
+                </div>
+                {/* Clickable upload text positioned like a frequency label */}
+                <label
+                  className={`freq-label special-upload-text ${
+                    specialFileName ? "uploaded" : ""
+                  }`}
+                >
+                  Click&nbsp;Me
+                  <input
+                    type="file"
+                    accept="audio/*"
+                    onChange={handleSpecialFileUpload}
+                    style={{ display: "none" }}
+                  />
+                </label>
+                {specialFileName && (
+                  <span
+                    className="file-name"
+                    style={{ fontSize: "0.6rem", textAlign: "center" }}
+                  >
+                    {specialFileName}
+                  </span>
+                )}
+
+                <div className="mapping-controls">
+                  <select
+                    className="axis-selector"
+                    value={specialControl.mapping}
+                    onChange={(e) => handleSpecialMappingChange(e.target.value)}
+                  >
+                    <option value="none">None</option>
+                    <option value="x">X</option>
+                    <option value="y">Y</option>
+                    <option value="z">Z</option>
+                  </select>
+
+                  {specialControl.mapping !== "none" && (
+                    <div className="multiplier-control">
+                      <label>
+                        ×
+                        {specialControl.multiplier >= 10
+                          ? specialControl.multiplier.toFixed(0)
+                          : specialControl.multiplier.toFixed(1)}
+                      </label>
+                      <input
+                        type="range"
+                        className="multiplier-slider"
+                        min="1"
+                        max="1000"
+                        step="1"
+                        value={specialControl.multiplier}
+                        onChange={(e) =>
+                          handleSpecialMultiplierChange(
+                            parseFloat(e.target.value)
+                          )
+                        }
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
 
