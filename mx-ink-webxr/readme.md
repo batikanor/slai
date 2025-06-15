@@ -1,10 +1,29 @@
 # MX Ink WebXR
 
-This template uses Three.js and WebXR to provide an immersive 3D painting experience using Logitech MX-INK.
+This project is a VR application that allows users to control music settings using a Logitech MX-INK stylus. By interacting with the stylus in 3D space, users can adjust pitch, volume, and add other instruments based on the coordinates of the stylus.
 
-<p align="center">
-<img src="https://github.com/user-attachments/assets/a0bdc4d3-40b8-4f5e-99eb-8d664477294b" alt="MX Ink WebXR Demo" width="500"/>
-</p>
+## Features
+- Immersive 3D painting experience using Logitech MX-INK
+- Real-time music control (pitch, volume, instrument selection) based on stylus coordinates
+- WebXR integration for VR headset compatibility
+- WebSocket communication for real-time updates
+
+## Technical Details
+- Built with Three.js and WebXR
+- Uses WebSockets for real-time communication
+- Implements a TubePainter for 3D drawing
+- Supports VR controllers and stylus input
+
+## Architecture
+- **Key Files**:
+  - `script.js`: Main entry point for the application, handling initialization, WebSocket communication, and rendering.
+  - `index.html`: HTML structure for the application.
+  - `style.css`: Styling for the application.
+
+- **APIs and Modules**:
+  - **Three.js**: Used for 3D rendering and scene management.
+  - **WebXR**: Enables VR functionality and controller input.
+  - **WebSockets**: Facilitates real-time communication for music control.
 
 ## Prerequisites
 
@@ -52,7 +71,7 @@ After building, you can deploy the contents of the `dist` directory to your pref
 
 1. Open the application in Quest browser.
 2. Click the "Enter XR" button to start.
-3. Use your stylus to paint in 3D space.
+3. Use your stylus to paint in 3D space and control music settings.
 4. Enjoy!
 
 ## Contributing

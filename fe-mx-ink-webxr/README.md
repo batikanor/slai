@@ -1,17 +1,56 @@
-# Own notes
+# Frontend for MX Ink WebXR
 
-- Use yarn
-- This connects to the mx-ink-webxr backend
+This project serves as the frontend for the MX Ink WebXR application, providing a user interface for interacting with the VR experience. It includes features for real-time updates and user interaction.
 
-# React + Vite
+## Features
+- Real-time data visualization
+- WebSocket integration for live updates
+- Mock data generation for testing
+- Interactive UI components
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Technical Details
+- Built with React.js
+- Uses WebSockets for real-time communication
+- Implements data visualization components
 
-Currently, two official plugins are available:
+## Architecture
+- **Key Files**:
+  - `App.jsx`: Main component that manages the application state, WebSocket connections, and data handling.
+  - `AudioEqualizer.jsx`: Component for audio equalization.
+  - `TrajectoryPlot.jsx`: Component for plotting trajectory data.
+  - `XYZTimelinePlot.jsx`: Component for visualizing XYZ coordinates over time.
+  - `config.js`: Configuration settings for the application.
+  - `mockDataGenerator.js`: Utility for generating mock data for testing.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **APIs and Modules**:
+  - **React.js**: Used for building the user interface and managing component state.
+  - **WebSockets**: Facilitates real-time communication for data updates.
 
-## Expanding the ESLint configuration
+## Prerequisites
+- Node.js (version 12.0 or higher recommended)
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Setup
+1. Clone the repository:
+```sh
+git clone https://github.com/yourusername/slai.git
+cd fe-mx-ink-webxr
+```
+
+2. Install dependencies:
+```sh
+npm install
+```
+
+## Running the Application
+To run the application in development mode:
+```sh
+npm run dev
+```
+
+This will start a local development server. Open your browser and navigate to `http://localhost:5173` (or the port specified in your console output).
+
+## Contributing
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+This project is licensed under the MIT License.
