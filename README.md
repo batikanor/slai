@@ -3,7 +3,7 @@
 This repository contains multiple projects related to immersive 3D painting and music control experiences, including WebXR and desktop applications.
 
 ## Projects
-- **mx-ink-webxr**: Immersive 3D painting with Logitech MX-INK and WebXR.
+- **mx-ink-webxr**: Immersive 3D painting with Logitech MX-INK and WebXR, allowing users to control music settings (pitch, volume, instrument selection) based on stylus coordinates.
 - **fe-mx-ink-webxr**: Frontend for MX Ink WebXR.
 - **desktop-app**: Desktop companion app.
 
